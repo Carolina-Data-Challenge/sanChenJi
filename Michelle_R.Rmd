@@ -1,0 +1,51 @@
+---
+title: "sanChenJi CDC2020"
+output: html_notebook
+---
+
+
+```{r}
+rm(list=ls())
+setwd("~/Downloads/cdc2020")
+library('dplyr')
+hl2018 <- read.csv("house_loans_2018.csv")
+fip <- read.csv("fips.csv")
+```
+
+```{r}
+countynames <- data.frame(names = fip$County, codes = fip$FIPS.code + 37000)
+
+hl2018_bycounty <- hl2018 %>% filter(action_taken == 2 | action_taken == 3 | action_taken == 1) %>% group_by(county_code) %>% summarise(n = n())
+
+hl2018_loanaccprop <- hl2018_bycounty %>% 
+  summarise(prop_approval = mean(action_taken == 2 | action_taken == 1))
+
+hl2018_loanstotal <- hl2018_loanaccprop$prop_approval * hl2018_bycounty$n
+
+hl2018final <- data.frame(country_code = hl2018_bycounty$county_code, totalloans.approved = hl2018_loanstotal, totalloans.incounty = hl2018_bycounty$n, prop.approved =hl2018_loanaccprop$prop_approval)
+
+install.packages('data.table')
+library('data.table')
+
+# making ratio.csv on our github
+fwrite(hl2018final, 'ratio.csv')
+
+mean(hl2018final$prop.approved)
+
+```
+
+```{r} 
+# PCA Attempt, but did not really use
+hl2018 <- hl2018 %>% filter(action_taken == 1 | action_taken == 2 | action_taken == 3) 
+
+approved <- c()
+approved[hl2018$action_taken == 1 | hl2018$action_taken == 2] <- "approved"
+approved[hl2018$action_taken == 3] <-  "not approved"
+
+approved <- factor(approved, ordered = FALSE, levels = c("approved", "not approved"))
+levels(approved)
+
+hl2018_mod <- data.frame(cbind(hl2018, approved)) %>% select(-X) %>% select(-activity_year) 
+
+#pca.hl <- prcomp(hl2018_mod, scale = TRUE)
+```
