@@ -1,4 +1,4 @@
-# 2020 Carolina Data Challenge analysis on 2018 HDMA Home Purchase Loan Applications
+# 2020 Carolina Data Challenge analysis on 2018 HMDA Home Purchase Loan Applications
 
 Informational website focusing on loan approval rates across North Carolina Counties. Integrated Tableau to produce interactive maps and other infographics
 
